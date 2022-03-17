@@ -19,6 +19,7 @@
 int main()
 {
 	std::cout << "Simulation start..." << std::endl;
+	std::cout << "Modification from my Mac..." << std::endl;
 
 	FILE* filePara = fopen("parameters.dat", "r");
 	if (!filePara) {
