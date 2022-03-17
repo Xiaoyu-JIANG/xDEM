@@ -18,6 +18,8 @@
 
 int main()
 {
+	std::cout << "Simulation start..." << std::endl;
+
 	FILE* filePara = fopen("parameters.dat", "r");
 	if (!filePara) {
 		printf("Can not open input parameter file...\n");
