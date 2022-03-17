@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <cmath>
+#include "MathFunc.h"
 
 class vector2d
 {
@@ -15,8 +15,8 @@ public:
 	vector2d(const vector2d& v) : X(v.X), Y(v.Y) {}
 	~vector2d() {}
 
-	inline const double x() const;
-	inline const double y() const;
+	inline const double x() const { return X; }
+	inline const double y() const { return Y; }
 
 	inline vector2d operator+(const vector2d& other) const;
 	inline vector2d& operator+=(const vector2d& other);
@@ -39,6 +39,7 @@ public:
 	inline static double getDistance(const vector2d& v1, const vector2d& v2);
 	inline static double getDistanceSquared(const vector2d& v1, const vector2d& v2);
 
+	inline void set(const double& x, const double& y) { X=x; Y=y; }
 	inline void setX(const double& x) { X = x; }
 	inline void setY(const double& y) { Y = y; }
 	inline void moveX(const double& x) { X += x; }
@@ -58,11 +59,6 @@ public:
 
 	const void print() const { printf("(%lf, %lf)\n", X, Y); }
 };
-
-
-inline const double vector2d::x() const { return X; }
-
-inline const double vector2d::y() const { return Y; }
 
 inline vector2d vector2d::operator+(const vector2d& other) const
 {

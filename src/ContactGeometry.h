@@ -18,15 +18,29 @@ public:
 	ContactGeometry() {}
 
 	void print() {
-		if (isContacted) {
-			printf("Contact is detected...\n");
-			printf("%+25s : (%lf, %lf)\n", "Contact point", contactPoint.x(), contactPoint.y());
-			printf("%+25s : (%lf, %lf)\n", "Contact normal", contactNormal.x(), contactNormal.y());
-			printf("%+25s : (%lf, %lf)\n", "Branch vector from p1", branchVectorFromP1.x(), branchVectorFromP1.y());
-			printf("%+25s : (%lf, %lf)\n", "Branch vector from p1", branchVectorFromP2.x(), branchVectorFromP2.y());
-			printf("%+25s : (%lf, %lf)\n", "Relative velocity", relVel.x(), relVel.y());
-			printf("%+25s : (%lf, %lf)\n", "Normal relative velocity", normalRelVel.x(), normalRelVel.y());
-			printf("%+25s : (%lf, %lf)\n", "Shear relative velocity", shearRelVel.x(), shearRelVel.y());
+		if (isContacted) printf("Contact is detected...\n");
+		printf("%+25s : (%lf, %lf)\n", "Contact point", contactPoint.x(), contactPoint.y());
+		printf("%+25s : (%lf, %lf)\n", "Contact normal", contactNormal.x(), contactNormal.y());
+		printf("%+25s : (%lf, %lf)\n", "Branch vector from p1", branchVectorFromP1.x(), branchVectorFromP1.y());
+		printf("%+25s : (%lf, %lf)\n", "Branch vector from p1", branchVectorFromP2.x(), branchVectorFromP2.y());
+		printf("%+25s : (%lf, %lf)\n", "Relative velocity", relVel.x(), relVel.y());
+		printf("%+25s : (%lf, %lf)\n", "Normal relative velocity", normalRelVel.x(), normalRelVel.y());
+		printf("%+25s : (%lf, %lf)\n", "Shear relative velocity", shearRelVel.x(), shearRelVel.y());
+	}
+
+	bool checkDataCorrectness() {
+		if (!std::isfinite(normalOverlap)) {
+			print();
+			return true;
 		}
+		if (!std::isfinite(contactPoint.x())||!std::isfinite(contactPoint.y())) {
+			print();
+			return true;
+		}
+		if (!std::isfinite(contactNormal.x())||!std::isfinite(contactNormal.y())) {
+			print();
+			return true;
+		}
+		return false;
 	}
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 
 #define pow2(x) ((x) * (x))
 #define pow3(x) ((x) * (x) * (x))

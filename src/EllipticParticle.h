@@ -78,6 +78,12 @@ private:
 		const vector2d& offset = vector2d(0.0, 0.0),
 		const vector2d& offsetVel = vector2d(0.0, 0.0));
 
+	bool contactWithEllipticParticle0(
+		const EllipticParticle* other, 
+		ContactGeometry& contactGeometry, 
+		const vector2d& offset = vector2d(0.0, 0.0),
+		const vector2d& offsetVel = vector2d(0.0, 0.0));
+
 	bool solveQuarticGeneral(double& a, double& b, double& c, double& d, double& e, // input parameters
 		double& alphaInit, double& betaInit, double& gammaInit, double& deltaInit);
 	double fastQuarticSolver(double& a, double& b, double& c, double& d,
