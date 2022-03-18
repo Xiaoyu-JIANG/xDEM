@@ -33,6 +33,12 @@ bool EllipticParticle::contactWithEllipticParticle(
 	const vector2d& offset, 
 	const vector2d& offsetVel)
 {
+	/* 
+	The mean idea comes from
+	https://journals.aps.org/pre/abstract/10.1103/PhysRevE.75.061709
+	Distance of closest approach of two arbitrary hard ellipses in two dimensions
+	Xiaoyu Zheng and Peter Palffy-Muhoray
+	*/
 	double temp;
 	// Start accurate detection
 	// Define basic properties
@@ -56,6 +62,7 @@ bool EllipticParticle::contactWithEllipticParticle(
     double eta = a1/b1 - 1.0;
     // Branch vector after transformation: eq(10)
     vector2d d_prime_hat = T * d_hat;
+	vector2d d_prime0 = T * d;
     // Coefficient matrix of elps2 after transformation: eq(8)
     matrix2d A_prime = (I+k1k1*eta) * (I-k2k2*pow2(e2)) * (I+k1k1*eta) * pow2(b1)/pow2(b2);
     // Eigenvalues and EigenVectors of A_prime eq(9)
@@ -63,7 +70,11 @@ bool EllipticParticle::contactWithEllipticParticle(
     vector2d lambda = A_prime.eigen(k_prime_plus, k_prime_minus);
     double a2_prime = 1.0 / sqrt(lambda.y());
     double b2_prime = 1.0 / sqrt(lambda.x());
-	if (d_prime_hat.getLength() > 1.0 + a2_prime) {
+	if (d_prime0.getLength() > 1.0 + a2_prime) {
+		contactGeometry.isContacted = false;
+		return false;
+	}
+	if (abs(vector2d::dot(d_prime0,k_prime_plus)) > 1.0 + b2_prime) {
 		contactGeometry.isContacted = false;
 		return false;
 	}
@@ -83,6 +94,8 @@ bool EllipticParticle::contactWithEllipticParticle(
     double C = -tanPhi2 - pow2(1.0+delta) + (1.0+(1.0+delta)*tanPhi2)/pow2(b2_prime);
     double D = 2.0*(1.0+tanPhi2)*(1.0+delta) / b2_prime;
     double E = (1.0+tanPhi2+delta) * (1.0+delta);
+
+	/*
     // Ferrari's method: eq(28)
     double alpha = (-3.0*pow2(B))/(8.0*pow2(A)) + C/A;
     double beta = pow3(B)/(8.0*pow3(A)) - (B*C)/(2.0*pow2(A)) + D/A;
@@ -94,7 +107,6 @@ bool EllipticParticle::contactWithEllipticParticle(
     temp = pow2(Q)/4.0 + pow3(P)/27.0;
     double Ure = -Q/2.0;
     double Uim = sqrt(abs(temp));
-    bool isReal = false;
     if (temp < 0) {
         MathFunc::cpow(Ure, Uim, Ure, Uim, 1.0/3.0);
     }
@@ -106,41 +118,53 @@ bool EllipticParticle::contactWithEllipticParticle(
         }
         else {
             Ure = std::pow(Ure, 1.0/3.0);
-            isReal = true;
         }
     }
     // Derive Y: eq(29-30)
     double Yre = 0.0, Yim = 0.0;
     if (abs(Ure) < 1e-8 && abs(Uim) < 1e-8) {
-        Yre = -5.0/6.0 * alpha - std::pow(Q, 1.0/3.0);
+		// Comments: The principal value of the cubic root of a negative real number is a complex number.
+		double Qre = Q;
+		double Qim = 0.0;
+		MathFunc::cpow(Qre, Qim, Qre, Qim, 1.0 / 3.0);
+		Yre = -5.0 / 6.0 * alpha - Qre;
+		Yim = -Qim;
     }
     else {
         Yre = -5.0/6.0 * alpha + Ure - P/3.0 * Ure/(pow2(Ure)+pow2(Uim));
         Yim = Uim + P/3.0 * Uim/(pow2(Ure)+pow2(Uim));
     }
     // Derive q: eq(31)
-    // Define alpha+2y=q0
+    //// Define alpha+2y=q0
     double q = 0.0;
-    if (isReal) {
-        double q0 = sqrt(alpha + 2.0*Yre);
-        q = -B/(4.0*A) + 0.5*(q0 + sqrt(-(3.0*alpha + 2.0*Yre + 2.0*beta/q0)));
-    }
-    else {
-        double q0re = alpha + 2.0*Yre;
-        double q0im = 2.0*Yim;
-        MathFunc::cpow(q0re, q0im, q0re, q0im, 0.5);
-        double q1re = - (3.0*alpha + 2.0*Yre + 2.0*beta * q0re/(pow2(q0re)+pow2(q0im)));
-        double q1im = - (            2.0*Yim - 2.0*beta * q0im/(pow2(q0re)+pow2(q0im)));
-        MathFunc::cpow(q1re, q1im, q1re, q1im, 0.5);
-        q = -B/(4.0*A) + 0.5*(q0re + q1re);
-    }
+    double q0re = alpha + 2.0*Yre;
+    double q0im = 2.0*Yim;
+    MathFunc::cpow(q0re, q0im, q0re, q0im, 0.5);
+    double q1re = - (3.0*alpha + 2.0*Yre + 2.0*beta * q0re/(pow2(q0re)+pow2(q0im)));
+    double q1im = - (            2.0*Yim - 2.0*beta * q0im/(pow2(q0re)+pow2(q0im)));
+    MathFunc::cpow(q1re, q1im, q1re, q1im, 0.5);
+    q = -B/(4.0*A) + 0.5*(q0re + q1re);
+	if (abs(alpha + 2.0 * Yre) < 1e-4 && abs(2.0 * Yim) < 1e-4) {
+		q = -B / (4.0 * A) + sqrt((-alpha + sqrt(pow2(alpha) - 4.0 * gamma)) / 2.0);
+	}
+	*/
+
+	/*
+	Instead of the original method proposed in the paper
+	Newton-Raphson Method is used to get 'q'.
+	Because it was figured out that the desired root 'q' is the positive real one,
+	The initial guess of 'q' is chosen as sqrt(delta+1.0), because according to eq(23) the value of 'q'
+	ranges from 0 to sqrt(delta+1.0)
+	*/
+	double q = NewtonRaphsonForQuartic(A, B, C, D, E, sqrt(delta+1.0));
+
+
     // Closest distance of two ellipses after transformation: eq(33)
     temp = (pow2(q) - 1.0) / delta;
 	double temp0 = temp;
 	double d_prime = 0.0;
 	if (temp < 0) temp = 0.0;
 	if (delta == 0 || !isfinite(temp)) {
-		std::cout << "delta == 0 is found..." << delta << std::endl;
 		d_prime = 1.0 + a2_prime;
 	}
 	else {
@@ -162,6 +186,7 @@ bool EllipticParticle::contactWithEllipticParticle(
 		vector2d contactPoint = tangentPoint * d.getLength() / dist;
 		matrix2d A1 = (I - k1k1 * pow2(e1)) / pow2(b1);
 		vector2d contactNorm = (A1 * tangentPoint);
+		contactNorm.normalize();
 		vector2d overlap = d_hat * overlap0;
 		overlap = contactNorm * overlap.dot(contactNorm);
 		contactGeometry.isContacted = true;
@@ -181,6 +206,7 @@ bool EllipticParticle::contactWithEllipticParticle(
 		vector2d contactPoint = tangentPoint * d.getLength() / dist;
 		matrix2d A1 = (I - k1k1 * pow2(e1)) / pow2(b1);
 		vector2d contactNorm = (A1 * tangentPoint);
+		contactNorm.normalize();
 		vector2d overlap = d_hat * overlap0;
 		overlap = contactNorm * overlap.dot(contactNorm);
 		contactGeometry.isContacted = true;
@@ -190,36 +216,44 @@ bool EllipticParticle::contactWithEllipticParticle(
 		contactGeometry.branchVectorFromP1 = contactGeometry.contactPoint - _position;
 		contactGeometry.branchVectorFromP2 = contactGeometry.contactPoint - (other->getPos() + offset);
 
-		if (contactGeometry.checkDataCorrectness()) {
-			std::cout << "a1 = " << a1 << std::endl;
-			std::cout << "b1 = " << b1 << std::endl;
-			std::cout << "z1 = " << z1 << std::endl;
-			std::cout << "a2 = " << a2 << std::endl;
-			std::cout << "b2 = " << b2 << std::endl;
-			std::cout << "z2 = " << z2 << std::endl;
-			std::cout << "d = "; d.print();
-			std::cout << "U = " << Ure << "\t" << Uim << std::endl;
-			std::cout << "Y = " << Yre << "\t" << Yim << std::endl;
-			std::cout << "q = " << q << std::endl;
-			std::cout << "d_prime = " << d_prime << std::endl;
-			std::cout << "dist = " << dist << std::endl;
-			std::cout << "temp0 = " << temp0 << std::endl;
-			std::cout << "delta = " << delta << std::endl;
-			std::cout << "lambda = "; lambda.print();
+		/*if (contactGeometry.checkDataCorrectness()) {
+		 	std::cout << "a1 = " << a1 << std::endl;
+		 	std::cout << "b1 = " << b1 << std::endl;
+		 	std::cout << "z1 = " << z1 << std::endl;
+		 	std::cout << "a2 = " << a2 << std::endl;
+		 	std::cout << "b2 = " << b2 << std::endl;
+		 	std::cout << "z2 = " << z2 << std::endl;
+		 	std::cout << "d = "; d.print();
+			std::cout << "P = " << P << std::endl;
+			std::cout << "Q = " << Q << std::endl;
+		 	std::cout << "U = " << Ure << "\t" << Uim << std::endl;
+		 	std::cout << "Y = " << Yre << "\t" << Yim << std::endl;
+		 	std::cout << "q = " << q << std::endl;
+		 	std::cout << "d_prime = " << d_prime << std::endl;
+		 	std::cout << "dist = " << dist << std::endl;
+		 	std::cout << "temp0 = " << temp0 << std::endl;
+		 	std::cout << "delta = " << delta << std::endl;
+		 	std::cout << "lambda = "; lambda.print();
 
-			std::cout << "sinPsi2 = " << sinPsi2 << std::endl;
-			std::cout << "cosPsi2 = " << cosPsi2 << std::endl;
-			std::cout << "K_prime_inv = "; K_prime_inv.print();
-			std::cout << "tangentPoint = "; tangentPoint.print();
-			std::cout << "T = "; T.print();
-			std::cout << "Tinv = "; T.inv().print();
-			std::cout << "contactPoint = "; contactPoint.print();
-			std::cout << "A1 = "; A1.print();
-			std::cout << "contactNorm = "; contactNorm.print();
-			std::cout << "overlap = "; overlap.print();
+		 	std::cout << "sinPsi2 = " << sinPsi2 << std::endl;
+		 	std::cout << "cosPsi2 = " << cosPsi2 << std::endl;
+		 	std::cout << "K_prime_inv = "; K_prime_inv.print();
+		 	std::cout << "tangentPoint = "; tangentPoint.print();
+		 	std::cout << "T = "; T.print();
+		 	std::cout << "Tinv = "; T.inv().print();
+		 	std::cout << "contactPoint = "; contactPoint.print();
+		 	std::cout << "A1 = "; A1.print();
+		 	std::cout << "contactNorm = "; contactNorm.print();
+		 	std::cout << "overlap = "; overlap.print();
 
-			std::cin.get();
-		}
+
+			double q0 = sqrt(alpha + 2.0 * Yre);
+			std::cout << "q0 = " << q0 << std::endl;
+			std::cout << "(-(3.0 * alpha + 2.0 * Yre + 2.0 * beta / q0)) = " 
+				<< (-(3.0 * alpha + 2.0 * Yre + 2.0 * beta / q0)) << std::endl;
+
+		 	std::cin.get();
+		}*/
 	}
     
 	/*if (contactGeometry.checkDataCorrectness()) {
@@ -245,6 +279,7 @@ bool EllipticParticle::contactWithEllipticParticle(
 	calculateRelativeVelocityAtContactPoint(other, contactGeometry, offsetVel);
 	return true;
 }
+
 
 bool EllipticParticle::contactWithEllipticParticle0(
 	const EllipticParticle* other, 
@@ -567,4 +602,21 @@ double EllipticParticle::fastQuarticSolver(
 		if (e_new < 1e-8) break;
 	}
 	return e_new;
-};
+}
+
+
+
+double EllipticParticle::NewtonRaphsonForQuartic(const double A, const double B, const double C, const double D, const double E, const double init)
+{
+	double A0 = 4.0 * A;
+	double B0 = 3.0 * B;
+	double C0 = 2.0 * C;
+	double r0 = init;
+	double r = 0.0;
+	double tol = 1e-8;
+	while (abs(r0 - r) > tol) {
+		r = r0;
+		r0 -= (A * pow4(r0) + B * pow3(r0) + C * pow2(r0) + D * r0 + E) / (A0 * pow3(r0) + B0 * pow2(r0) + C0 * r0 + D);
+	}
+	return r0;
+}

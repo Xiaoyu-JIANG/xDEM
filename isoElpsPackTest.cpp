@@ -49,7 +49,7 @@ int main()
 	const double density = 10.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
-	const double resCoeff = 0.01;
+	const double resCoeff = 0.1;
 	const double friCoeff = friction;
 	const double xmin = -100.0;
 	const double xmax = 100.0;
@@ -63,6 +63,7 @@ int main()
 	std::uniform_real_distribution<double> real_x(xmin, xmax);
 	std::uniform_real_distribution<double> real_y(ymin, ymax);
 	std::uniform_real_distribution<double> real_t(0.0, M_PI * 2.0);
+	std::uniform_real_distribution<double> real_a(1.01, aspectRatio);
 
 	// RANDOM GENERATION
 	// Generate particles, contact model, and world.
@@ -76,8 +77,8 @@ int main()
 		circularParticles[i].calculateParticleProperties(density);
 		particleHandlers[i] = &circularParticles[i];
 	}
-	circularParticles[0].setPos(vector2d(0.0, 0.0));
-	circularParticles[0].appendSetting(SKIP_TIME_INTEGRAL);
+	//circularParticles[0].setPos(vector2d(0.0, 0.0));
+	//circularParticles[0].appendSetting(SKIP_TIME_INTEGRAL);
 	PeriodicBoundaryWorld world_rg(dt, particleHandlers, &contactModel);
 	world_rg.set_OMP_NumThreadsAndSizeChunk(numThread, sizeChunk);
 	world_rg.setWorldBoundary(xmin, xmax, ymin, ymax);
@@ -110,7 +111,7 @@ int main()
 		ellipticParticles[i].calculateParticleProperties(density);
 		particleHandlers[i] = &ellipticParticles[i];
 	}
-	ellipticParticles[0].appendSetting(SKIP_TIME_INTEGRAL);
+	//ellipticParticles[0].appendSetting(SKIP_TIME_INTEGRAL);
 
 	// Control parameters...
 	double ConstantStress = pressure;
@@ -137,9 +138,9 @@ int main()
 		world_le.collectForceAndTorque();
 		world_le.takeTimeIntegral();
 		world_le.updateTotalStress();
-		//world_le.updatePeriodicBoundary_stressControlUniform(ConstantStress);
-		world_le.updatePeriodicBoundary_stressControlX(ConstantStress);
-		world_le.updatePeriodicBoundary_stressControlY(ConstantStress);
+		world_le.updatePeriodicBoundary_stressControlUniform(ConstantStress);
+		//world_le.updatePeriodicBoundary_stressControlX(ConstantStress);
+		//world_le.updatePeriodicBoundary_stressControlY(ConstantStress);
 
 		
 		if (fmod(iStep, 10000) == 0) {
@@ -148,7 +149,7 @@ int main()
 			world_le.flushAllFiles();
 		}
 
-		if ((world_le.getKineticEnergyPerParticle() < 1e-12 && iStep > 1e6)) break;
+		if ((world_le.getKineticEnergyPerParticle() < 1e-10 && iStep > 1e6)) break;
 
 		iStep++;
 	}

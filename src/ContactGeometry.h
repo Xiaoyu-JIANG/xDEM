@@ -19,6 +19,7 @@ public:
 
 	void print() {
 		if (isContacted) printf("Contact is detected...\n");
+		printf("%+25s : %lf\n",        "Overlap", normalOverlap);
 		printf("%+25s : (%lf, %lf)\n", "Contact point", contactPoint.x(), contactPoint.y());
 		printf("%+25s : (%lf, %lf)\n", "Contact normal", contactNormal.x(), contactNormal.y());
 		printf("%+25s : (%lf, %lf)\n", "Branch vector from p1", branchVectorFromP1.x(), branchVectorFromP1.y());

@@ -3,7 +3,7 @@ clc
 close all
 fclose all;
 
-boundaryHalfLentgh = 32; 
+boundaryHalfLentgh = 40;
 boundaryGap = 1.1;
 
 r = importdata('output_radius.dat');
@@ -65,5 +65,5 @@ for i = 1:step:length(xe(:,1))
     hl = line(X,Y,'Color','k','LineStyle','-');
     
     drawnow
-%     pause
+%     pause(0.3)
 end

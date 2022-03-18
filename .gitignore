@@ -3,3 +3,4 @@ debug
 .DS_Store
 .vscode
 msvc_release
+gcc_release

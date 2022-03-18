@@ -116,9 +116,6 @@ inline vector2d matrix2d::eigen(vector2d& eigenVector1, vector2d& eigenVector2)
 	double delta = trace * trace - 4.0 * det;
 	if (delta < 0) delta = 0.0;
 	delta = sqrt(delta);
-	if (trace * trace - 4.0 * det < 0) {
-		print();
-	}
 	double eigenValue1 = (trace + delta) / 2.0;
 	double eigenValue2 = (trace - delta) / 2.0;
 	vector2d eigenValue;

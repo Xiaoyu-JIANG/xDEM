@@ -89,4 +89,5 @@ private:
 	double fastQuarticSolver(double& a, double& b, double& c, double& d,
 		double& alphaInit, double& betaInit, double& gammaInit, double& deltaInit,
 		double& alpha, double& beta, double& gamma, double& delta);
+	double NewtonRaphsonForQuartic(const double A, const double B, const double C, const double D, const double E, const double init);
 };

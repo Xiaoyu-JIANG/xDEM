@@ -148,6 +148,36 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlUniform(const dou
 	scaleAllParticlePosition(scale, scale);
 }
 
+void PeriodicControlWorld::updatePeriodicBoundary_stressControlX(const double& stress)
+{
+	double xminPre = _xmin;
+	double stressX = _totalStress.xx();
+	double deltaVel = (stress - stressX) * _xlen * _dt;
+	_velX += deltaVel;
+	_xmin += _velX * _dt;
+	_xmax = -_xmin;
+	_xlen = _xmax - _xmin;
+
+	double scale = _xmin / xminPre;
+
+	scaleAllParticlePosition(scale, 1.0);
+}
+
+void PeriodicControlWorld::updatePeriodicBoundary_stressControlY(const double& stress)
+{
+	double yminPre = _ymin;
+	double stressY = _totalStress.yy();
+	double deltaVel = (stress - stressY) * _ylen * _dt;
+	_velY += deltaVel;
+	_ymin += _velY * _dt;
+	_ymax = -_ymin;
+	_ylen = _ymax - _ymin;
+
+	double scale = _ymin / yminPre;
+
+	scaleAllParticlePosition(1.0, scale);
+}
+
 //void PeriodicControlWorld::updatePeriodicBoundary_stressControlUniform(const double& stress)
 //{
 //	double xminPre = _xmin;
@@ -192,34 +222,6 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlUniform_strainLim
 	scaleAllParticlePosition(scale, scale);
 }
 
-void PeriodicControlWorld::updatePeriodicBoundary_stressControlX(const double& stress)
-{
-	double xminPre = _xmin;
-	double stressX = _totalStress.xx();
-	double deltaVel = (stress - stressX) * _xlen * _dt;
-	_velX += deltaVel;
-	_xmin += _velX * _dt;
-	_xmax = -_xmin; 
-	_xlen = _xmax - _xmin;
 
-	double scale = _xmin / xminPre;
-
-	scaleAllParticlePosition(scale, 1.0);
-}
-
-void PeriodicControlWorld::updatePeriodicBoundary_stressControlY(const double& stress)
-{
-	double yminPre = _ymin;
-	double stressY = _totalStress.yy();
-	double deltaVel = (stress - stressY) * _ylen * _dt;
-	_velY += deltaVel;
-	_ymin += _velY * _dt; 
-	_ymax = -_ymin;  
-	_ylen = _ymax - _ymin;
-
-	double scale = _ymin / yminPre;
-
-	scaleAllParticlePosition(1.0, scale);
-}
 
 

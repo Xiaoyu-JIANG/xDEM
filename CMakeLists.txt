@@ -18,4 +18,4 @@ endif()
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 # endif()
 
-# cmake .. -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release
+# cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
