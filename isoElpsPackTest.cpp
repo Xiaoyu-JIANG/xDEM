@@ -70,8 +70,10 @@ int main()
 	ContactModel contactModel(kn, kt, 0.95, 0.0);
 	vector<CircularParticle> circularParticles(numParticle);
 	vector<BaseParticle*> particleHandlers(numParticle);
+	vector<double> alpha(numParticle);
 	for (int i = 0; i < numParticle; ++i) {
-		circularParticles[i] = CircularParticle(i, real_r(engine) * radiusScaleFactor,
+		alpha[i] = real_a(engine);
+		circularParticles[i] = CircularParticle(i, real_r(engine) * sqrt(alpha[i]),
 			vector2d(real_x(engine), real_y(engine)), vector2d(0.0, 0.0),
 			real_t(engine), 0.0, &contactModel);
 		circularParticles[i].calculateParticleProperties(density);
@@ -107,7 +109,7 @@ int main()
 	// Generate elliptic partiles
 	vector<EllipticParticle> ellipticParticles(numParticle);
 	for (int i = 0; i < numParticle; ++i) {
-		ellipticParticles[i] = EllipticParticle(circularParticles[i], aspectRatio, &contactModel);
+		ellipticParticles[i] = EllipticParticle(circularParticles[i], alpha[i], &contactModel);
 		ellipticParticles[i].calculateParticleProperties(density);
 		particleHandlers[i] = &ellipticParticles[i];
 	}
@@ -129,9 +131,9 @@ int main()
 	contactModel.setRestitutionCoeff(0.01);
 	contactModel.recalculateFactor();
 	int iStep = 0;
-	while (1) {
+	while (iStep <= 2e6) {
 
-		world_le.scaleVelocityOfRattlers(0.9999);
+		//world_le.resetVelocityOfRattlers();
 		world_le.modifyParticlePosition();
 		world_le.findPossibleContacts();
 		world_le.updateContacts();
@@ -148,8 +150,6 @@ int main()
 			world_le.writeParticleTimeHistory2Files();
 			world_le.flushAllFiles();
 		}
-
-		if ((world_le.getKineticEnergyPerParticle() < 1e-10 && iStep > 1e6)) break;
 
 		iStep++;
 	}

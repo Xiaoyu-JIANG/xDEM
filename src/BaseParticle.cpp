@@ -71,7 +71,7 @@ bool BaseParticle::calculateContactForceAndTorque(
 			double det = contactInfo._contactNormal.cross(contactGeometry.contactNormal);
 			double angle = atan2(det, dot);
 			matrix2d R(std::cos(angle), -std::sin(angle),
-				std::sin(angle), std::cos(angle));
+					   std::sin(angle),  std::cos(angle));
 			contactInfo._shearOverlap = R.dot(contactInfo._shearOverlap);
 			contactInfo._shearOverlap += contactGeometry.shearRelVel * dt;
 			contactInfo._contactNormal = contactGeometry.contactNormal;
