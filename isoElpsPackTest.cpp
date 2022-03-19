@@ -73,7 +73,7 @@ int main()
 	vector<double> alpha(numParticle);
 	for (int i = 0; i < numParticle; ++i) {
 		alpha[i] = real_a(engine);
-		circularParticles[i] = CircularParticle(i, real_r(engine) * sqrt(alpha[i]),
+		circularParticles[i] = CircularParticle(i, real_r(engine) * radiusScaleFactor,
 			vector2d(real_x(engine), real_y(engine)), vector2d(0.0, 0.0),
 			real_t(engine), 0.0, &contactModel);
 		circularParticles[i].calculateParticleProperties(density);
@@ -109,7 +109,7 @@ int main()
 	// Generate elliptic partiles
 	vector<EllipticParticle> ellipticParticles(numParticle);
 	for (int i = 0; i < numParticle; ++i) {
-		ellipticParticles[i] = EllipticParticle(circularParticles[i], alpha[i], &contactModel);
+		ellipticParticles[i] = EllipticParticle(circularParticles[i], aspectRatio, &contactModel);
 		ellipticParticles[i].calculateParticleProperties(density);
 		particleHandlers[i] = &ellipticParticles[i];
 	}
@@ -131,7 +131,7 @@ int main()
 	contactModel.setRestitutionCoeff(0.01);
 	contactModel.recalculateFactor();
 	int iStep = 0;
-	while (iStep <= 2e6) {
+	while (1) {
 
 		//world_le.resetVelocityOfRattlers();
 		world_le.modifyParticlePosition();
@@ -140,9 +140,9 @@ int main()
 		world_le.collectForceAndTorque();
 		world_le.takeTimeIntegral();
 		world_le.updateTotalStress();
-		world_le.updatePeriodicBoundary_stressControlUniform(ConstantStress);
-		//world_le.updatePeriodicBoundary_stressControlX(ConstantStress);
-		//world_le.updatePeriodicBoundary_stressControlY(ConstantStress);
+		//world_le.updatePeriodicBoundary_stressControlUniform(ConstantStress);
+		world_le.updatePeriodicBoundary_stressControlX(ConstantStress);
+		world_le.updatePeriodicBoundary_stressControlY(ConstantStress);
 
 		
 		if (fmod(iStep, 10000) == 0) {
@@ -151,9 +151,17 @@ int main()
 			world_le.flushAllFiles();
 		}
 
+		if ((world_le.getKineticEnergyPerParticle() < 1e-10 && iStep > 1e6)) break;
+
 		iStep++;
 	}
 	
+	world_le.closeParticleTimeHistoryFiles();
+
+	path = "Compression\\Final\\";
+	world_le.prepare(path);
+	world_le.writeParticleTimeHistory2Files();
+	world_le.flushAllFiles();
 	world_le.closeParticleTimeHistoryFiles();
 
 

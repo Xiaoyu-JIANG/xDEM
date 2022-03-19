@@ -3,7 +3,7 @@ clc
 close all
 fclose all;
 
-boundaryHalfLentgh = 40;
+boundaryHalfLentgh = 90;
 boundaryGap = 1.1;
 
 r = importdata('output_radius.dat');
@@ -12,9 +12,11 @@ xe = importdata('output_position.dat');
 ze = importdata('output_rotation.dat');
 bd = importdata('output_boundary.dat');
 
+
+
 fig = figure('units','centimeters','position',[2 2 23 23]);
 
-n = 200;
+n = 50;
 tt = 0:2*pi/n:2*pi;
 xx = cos(tt);
 yy = sin(tt);

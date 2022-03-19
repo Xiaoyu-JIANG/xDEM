@@ -152,7 +152,8 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlX(const double& s
 {
 	double xminPre = _xmin;
 	double stressX = _totalStress.xx();
-	double deltaVel = (stress - stressX) * _xlen * _dt;
+	_velX *= (1.0 - _dt * 1.0);
+	double deltaVel = (stress - stressX) * _xlen / _mass * _dt;
 	_velX += deltaVel;
 	_xmin += _velX * _dt;
 	_xmax = -_xmin;
@@ -167,7 +168,8 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlY(const double& s
 {
 	double yminPre = _ymin;
 	double stressY = _totalStress.yy();
-	double deltaVel = (stress - stressY) * _ylen * _dt;
+	_velY *= (1.0 - _dt * 1.0);
+	double deltaVel = (stress - stressY) * _ylen / _mass * _dt;
 	_velY += deltaVel;
 	_ymin += _velY * _dt;
 	_ymax = -_ymin;
