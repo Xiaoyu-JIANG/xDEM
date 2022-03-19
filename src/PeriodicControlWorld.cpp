@@ -78,7 +78,7 @@ void PeriodicControlWorld::print2Screen_worldState(const int& iStep)
 	static clock_t timerTotal = clock();
 	static clock_t timer = clock();
 	timer = clock() - timer;
-	printf("Current step = %d, Time used per 1000 steps = %lf, Total time used = %lf\n", iStep,
+	printf("Current step = %d, Time used from lase output steps = %lf, Total time used = %lf\n", iStep,
 		(static_cast<double>(timer) / CLOCKS_PER_SEC),
 		((static_cast<double>(clock()) - timerTotal) / CLOCKS_PER_SEC));
 	timer = clock();
