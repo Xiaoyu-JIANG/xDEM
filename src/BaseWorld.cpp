@@ -206,7 +206,7 @@ void BaseWorld::updateMaximumParticleSize()
 				_maxParticleSize = maxParticleSize;
 		}
 	}
-	_maxParticleSize *= 2.1;
+	_maxParticleSize *= 2.01;
 	printf("Logger msg: Maximum particle size = %lf\n", _maxParticleSize);
 }
 
