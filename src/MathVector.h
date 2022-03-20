@@ -137,7 +137,7 @@ inline double vector2d::getLengthSquared() const
 
 inline double vector2d::getDistance(const vector2d& other) const
 {
-	return getDistanceSquared(other);
+	return sqrt(getDistanceSquared(other));
 }
 
 inline double vector2d::getDistanceSquared(const vector2d& other) const
