@@ -20,6 +20,10 @@ bool EllipticParticle::calculateContactGeometry(
 	const vector2d& offsetVel)
 {
 	if (const EllipticParticle* other = dynamic_cast<const EllipticParticle*>(otherParticle)) {
+		if (!takeCoarseDetection(otherParticle, offset)) {
+			contactGeometry.isContacted = false;
+			return false;
+		}
 		return contactWithEllipticParticle(other, contactGeometry, offset, offsetVel);
 	}
 	else {
