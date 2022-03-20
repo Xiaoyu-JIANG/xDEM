@@ -45,7 +45,7 @@ int main()
 	printf("OMP parameters:\nnumber of thread: %d\nsize of chunk: %d\n", numThread, sizeChunk);
 
 
-	double dt = 1e-4;
+	double dt = 1e-3;
 	const double density = 10.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
@@ -130,7 +130,7 @@ int main()
 	contactModel.recalculateFactor();
 	int iStep = 0;
 	while (1) {
-		
+
 
 		world_le.scaleVelocityOfRattlers(0.9999);
 		world_le.modifyParticlePosition();
@@ -143,7 +143,7 @@ int main()
 		world_le.updatePeriodicBoundary_stressControlX(ConstantStress);
 		world_le.updatePeriodicBoundary_stressControlY(ConstantStress);
 
-		
+
 		if (fmod(iStep, 10000) == 0) {
 			char path0[50];
 			sprintf(path0, "%s%010d", path.c_str(), iStep);
@@ -158,7 +158,7 @@ int main()
 
 		iStep++;
 	}
-	
+
 
 
 
