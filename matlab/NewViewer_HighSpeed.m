@@ -3,7 +3,7 @@ clc
 close all
 fclose all;
 
-boundaryHalfLentgh = 90;
+boundaryHalfLentgh = 160;
 boundaryGap = 1.1;
 
 r = importdata('output_radius.dat');
