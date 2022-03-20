@@ -37,11 +37,10 @@ void PeriodicBoundaryWorld::findPossibleContacts()
 		int threadID = omp_get_thread_num();
 		int boxStart = threadID * numGridPerThread;
 		int boxEnd = (threadID + 1) * numGridPerThread - 1;
-		//printf("Logger msg: thread_%d (%d, %d)\n", threadID, boxStart, boxEnd);
 		for (int i = 0; i < _numParticle; ++i) {
 			int ib = particleInGrid[i][1] * numGridX + particleInGrid[i][0];
-			if (ib >= boxStart && ib <= boxEnd) 
-				box[ib].push_back(i);
+			if (ib < boxStart || ib > boxEnd) continue;
+			box[ib].push_back(i);
 		}
 	}
 	// Find possible contacts and construct possible contact list
