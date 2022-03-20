@@ -130,6 +130,9 @@ int main()
 	contactModel.setFriction(friCoeff);
 	contactModel.setRestitutionCoeff(0.01);
 	contactModel.recalculateFactor();
+
+	FILE* fileTime = fopen("Compression\\output_computationalTime.dat", "w");
+	clock_t timer = clock();
 	int iStep = 0;
 	while (1) {
 
@@ -149,6 +152,11 @@ int main()
 			world_le.print2Screen_worldState(iStep);
 			world_le.writeParticleTimeHistory2Files();
 			world_le.flushAllFiles();
+
+			timer = clock() - timer;
+			fprintf(fileTime, "%lf\n", static_cast<double>(timer) / CLOCKS_PER_SEC);
+			timer = clock();
+			fflush(fileTime);
 		}
 
 		if ((world_le.getKineticEnergyPerParticle() < 1e-10 && iStep > 1e6)) break;
@@ -163,6 +171,8 @@ int main()
 	world_le.writeParticleTimeHistory2Files();
 	world_le.flushAllFiles();
 	world_le.closeParticleTimeHistoryFiles();
+
+	fclose(fileTime);
 
 
 	printf("==================================================\n");
