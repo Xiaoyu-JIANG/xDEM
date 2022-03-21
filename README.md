@@ -1,3 +1,4 @@
 # xDEM
 
-A discrete element method with circular, elliptical, and clump particles.
+## Particle type
+1. Circular particle
