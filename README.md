@@ -16,7 +16,10 @@ bool calculateContactGeometry(
 which tells the contact information such as contact point, contact normal and so on.
 1. Circular particle ```CircularParticle```.
 2. Elliptical particle ```EllipticParticle```.
-3. Clump particle, ```GluedParticle``` as up level particle, with others as lower level to represent the geometory.
+Two different contact detection algorithms are provided (!!!ALL contact detections of ellipses would eventually reduce to the problem of solving a quartic equation).
+    1. A traditional and direct approach, which finds the two intersection points of two interacting ellipses. Quartic euqation is solved using the approach proposed by Strobach, P. (2010). The fast quartic solver. Journal of computational and applied mathematics, 234(10), 3007-3024. The initial guesses are determined by https://en.wikipedia.org/wiki/Quartic_function.
+    2. A closest distance based approach (see Zheng, X., & Palffy-Muhoray, P. (2007). Distance of closest approach of two arbitrary hard ellipses in two dimensions. Physical Review E, 75(6), 061709.). The advantage of this approach is that only one positive real root of the quartic is required, so that this can be found using Newton-Raphson Method (https://en.wikipedia.org/wiki/Newton%27s_method), thus issues about complex numbers are avoided.
+4. Clump particle, ```GluedParticle``` as up level particle, with others as lower level to represent the geometory.
 
 ## Boundary condition
 All boundary conditions are derived from ```BaseWorld``` class.
