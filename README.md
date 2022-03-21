@@ -2,6 +2,8 @@
 
 A 2D Discrete Element Method, acceletated by OpenMP library.
 
+For non-commercial use.
+
 Author E-mail: xiaoxiao0129jp@gmail.com
 
 ## Particle type
