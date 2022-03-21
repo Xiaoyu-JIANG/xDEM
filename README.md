@@ -1,6 +1,6 @@
 # xDEM
 
-A 2D Discrete Element Method.
+A 2D Discrete Element Method, acceletated by OpenMP library.
 
 ## Particle type
 All particle types are derived from ```BaseParticle``` class.\
