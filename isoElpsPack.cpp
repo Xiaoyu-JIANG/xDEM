@@ -45,7 +45,7 @@ int main()
 	printf("OMP parameters:\nnumber of thread: %d\nsize of chunk: %d\n", numThread, sizeChunk);
 
 
-	double dt = 1e-3;
+	double dt = 1e-4;
 	const double density = 10.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
