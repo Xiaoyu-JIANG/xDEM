@@ -6,6 +6,8 @@ For non-commercial use.
 
 Author E-mail: xiaoxiao0129jp@gmail.com
 
+![](testAnimated.gif)
+
 ## Particle type
 All particle types are derived from ```BaseParticle``` class.\
 You can define your own particle type easily, by mainly providing the virtual function 
