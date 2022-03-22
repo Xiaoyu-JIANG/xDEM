@@ -6,7 +6,7 @@ For non-commercial use.
 
 Author E-mail: xiaoxiao0129jp@gmail.com
 
-![](testAnimated.gif)
+<img src="testAnimated.gif" width="480" height="480"/>
 
 ## Particle type
 All particle types are derived from ```BaseParticle``` class.\
