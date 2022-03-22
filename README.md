@@ -53,4 +53,4 @@ Find rattlers, compute rattler-free coordination number and solid fraction, cons
 
 
 ## ToDo
-[ ] Add binary file output
+- [ ] Add binary file output
