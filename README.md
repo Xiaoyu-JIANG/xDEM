@@ -6,6 +6,8 @@ For non-commercial use.
 
 Author E-mail: xiaoxiao0129jp@gmail.com
 
+<img src="testAnimated.gif" width="480" height="480"/>
+
 ## Particle type
 All particle types are derived from ```BaseParticle``` class.\
 You can define your own particle type easily, by mainly providing the virtual function 
@@ -50,6 +52,8 @@ Find rattlers, compute rattler-free coordination number and solid fraction, cons
 
 - Cluster labelling algorithm ```ClusterLabelling```, used for elliptical particles.\
     [1] Jiang, Xiaoyu, Takashi Matsushima, and Raphael Blumenfeld. 2021. “Structural Characteristics of Ordered Clusters in Packs of Ellipses.” EPJ Web of Conferences 249: 06004.
+
+<img src="clusterLabelling.gif" width="480"/>
 
 
 ## ToDo
