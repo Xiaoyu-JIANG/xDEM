@@ -53,6 +53,8 @@ Find rattlers, compute rattler-free coordination number and solid fraction, cons
 - Cluster labelling algorithm ```ClusterLabelling```, used for elliptical particles.\
     [1] Jiang, Xiaoyu, Takashi Matsushima, and Raphael Blumenfeld. 2021. “Structural Characteristics of Ordered Clusters in Packs of Ellipses.” EPJ Web of Conferences 249: 06004.
 
+<img src="clusterLabelling.gif" width="480"/>
+
 
 ## ToDo
 - [ ] Add binary file output
