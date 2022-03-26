@@ -6,7 +6,7 @@
 #define FORMAT_BaseParticle \
 "%7d\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%4d\n"
 
-const double BaseParticle::_GlobalDamping_ = 0.1;
+const double BaseParticle::_GlobalDamping_ = 0.0;
 
 void BaseParticle::calculateRelativeVelocityAtContactPoint(
 	const BaseParticle* const other, 
@@ -42,7 +42,7 @@ bool BaseParticle::calculateContactForceAndTorque(
 					contactGeometry.branchVectorFromP1, contactGeometry.branchVectorFromP2));
 			auto& contactInfo = _contactInfo.at(key);
 			// Calculate initial overlap in shear dirction.
-			if (contactGeometry.relVel.dot(contactGeometry.contactNormal) == 0.0) {
+			if (!isnormal(contactGeometry.relVel.dot(contactGeometry.contactNormal))) {
 				contactInfo._shearOverlap = contactGeometry.shearRelVel * dt;
 			}
 			else {
