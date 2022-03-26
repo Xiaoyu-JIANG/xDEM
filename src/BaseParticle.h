@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 #include "MathVector.h"
 #include "MathMatrix2d.h"
 #include "ContactGeometry.h"
