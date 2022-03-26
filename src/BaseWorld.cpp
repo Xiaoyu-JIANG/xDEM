@@ -130,6 +130,14 @@ void BaseWorld::scaleAllParticleVelocity(const double& scale)
 	}
 }
 
+void BaseWorld::resetAllParticleVelocity()
+{
+	for (auto& iter : _particleHandlers) {
+		iter->resetVel();
+		iter->resetRotVel();
+	}
+}
+
 void BaseWorld::scaleBoundarySize(const double& scale)
 {
 	_xmin *= scale;
