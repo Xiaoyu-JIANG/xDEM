@@ -95,6 +95,7 @@ public:
 	void setAllParticlesAsRattler();
 	void scaleAllParticlePosition(const double& scaleX, const double& scaleY);
 	void scaleAllParticleVelocity(const double& scale);
+	void resetAllParticleVelocity();
 	void scaleBoundarySize(const double& scale);
 
 	// Update methods
