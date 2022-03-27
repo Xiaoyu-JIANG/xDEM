@@ -30,7 +30,6 @@ constexpr SETTING& operator|=(SETTING& lhs, SETTING rhs) { lhs = lhs | rhs; retu
 class BaseParticle
 {
 protected:
-	const static double _GlobalDamping_;
 	int			_upLevel = -1;
 	int			_id = -1;
 	bool		_isRattler = false;
@@ -49,6 +48,8 @@ protected:
 	SETTING		_setting = SETTING::NONE;
 
 public:
+	static double _GlobalDamping_;
+
 	BaseParticle() {}
 
 	BaseParticle(const int& id,
@@ -155,6 +156,7 @@ public:
 	inline void clearSetting() { _setting = SETTING::NONE; }
 	inline void setAsRattler() { _isRattler = true; }
 	inline void setAsNonRattler() { _isRattler = false; }
+	void setGlobalDamping(const double gDamping) { _GlobalDamping_ = gDamping; }
 
 	// Other methods
 	virtual const bool pointInsideParticle(const vector2d& point) const = 0;
