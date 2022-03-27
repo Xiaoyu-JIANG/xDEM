@@ -44,10 +44,10 @@ int main()
 
 
 	double dt = 1e-4;
-	const double density = 10.0;
+	const double density = 1.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
-	const double resCoeff = 1.0;
+	const double resCoeff = 0.9;
 	const double friCoeff = friction;
 	const double xmin = -100.0;
 	const double xmax = 100.0;
@@ -65,7 +65,7 @@ int main()
 
 	// RANDOM GENERATION
 	// Generate particles, contact model, and world.
-	ContactModel contactModel(kn, kt, 0.95, 0.0);
+	ContactModel contactModel(kn, kt, 0.9, 0.0);
 	vector<CircularParticle> circularParticles(numParticle);
 	vector<BaseParticle*> particleHandlers(numParticle);
 	vector<double> alpha(numParticle);
@@ -86,6 +86,7 @@ int main()
 	simRandGen.scaleBoundarySizeToGivenSolidFraction(initialSolidFrac);
 
 	// Simulation start...
+	CircularParticle::_GlobalDamping_ = 0.0;
 	string path = "RandomGeneration\\";
 	simRandGen.prepare(path);
 	for (int iStep = 0; iStep < 5e4; ++iStep) {
@@ -105,6 +106,7 @@ int main()
 
 
 	// Generate elliptic partiles
+	contactModel = ContactModel(kn, kt, resCoeff, friCoeff);
 	vector<EllipticParticle> ellipticParticles(numParticle);
 	for (int i = 0; i < numParticle; ++i) {
 		ellipticParticles[i] = EllipticParticle(circularParticles[i], aspectRatio, &contactModel);
@@ -121,18 +123,19 @@ int main()
 	simIsoComp.setWorldBoundary(simRandGen.getXmin(), simRandGen.getXmax(), simRandGen.getYmin(), simRandGen.getYmax());
 	simIsoComp.updateTotalParticleVolume();
 	simIsoComp.setVirtualBoundaryMass();
+
 	// Simulation start...
 	// Compression
 	path = "Compression\\";
 	simIsoComp.prepare(path);
-	contactModel.setFriction(friCoeff);
-	contactModel.setRestitutionCoeff(0.01);
-	contactModel.recalculateFactor();
+	
 
 	FILE* fileTime = fopen("Compression\\output_computationalTime.dat", "w");
 	clock_t timer = clock();
 	int iStep = 0;
 	int count = 0;
+	bool goNextComp = true;
+	EllipticParticle::_GlobalDamping_ = 0.1;
 	while (1) {
 
 		simIsoComp.scaleVelocityOfRattlers(0.9);
@@ -141,28 +144,44 @@ int main()
 		simIsoComp.updateContacts();
 		simIsoComp.collectForceAndTorque();
 		simIsoComp.takeTimeIntegral();
-		simIsoComp.updateTotalStress();
-		if (simIsoComp.countActucalContacts() == 0 || simIsoComp.getKineticEnergyPerNonRattlerParticle() < 1e-8) {
-			simIsoComp.updatePeriodicBoundary_strainControl(-1e-2, -1e-2);
+		
+
+		double elasticEnergy = simIsoComp.getElasticEnergyPerContact();
+		double kineticEnergy = simIsoComp.getKineticEnergyPerNonRattlerParticle();
+
+		if ((elasticEnergy < 1e-8 || kineticEnergy < 1e-8) && goNextComp) {
+			if (count == 1) {
+				simIsoComp.updateTotalStress();
+				simIsoComp.print2Screen_worldState(iStep);
+				simIsoComp.writeParticleTimeHistory2Files();
+				simIsoComp.flushAllFiles();
+
+				std::cout << "\t\tElastic energy = " << elasticEnergy << std::endl;
+
+				timer = clock() - timer;
+				fprintf(fileTime, "%lf\n", static_cast<double>(timer) / CLOCKS_PER_SEC);
+				timer = clock();
+				fflush(fileTime);
+
+				count = 0;
+			}
+
+			simIsoComp.updatePeriodicBoundary_strainControl(-1e-1, -1e-1);
 			count++;
+			goNextComp = false;
+		}
+		else {
+			goNextComp = true;
 		}
 
-
-		if (fmod(iStep, 10000) == 0) {
-			simIsoComp.print2Screen_worldState(iStep);
+		if (fmod(iStep, 1000) == 0) {
+			int actualContactNum = simIsoComp.countActucalContacts();
+			std::cout << "Elastic energy = " << elasticEnergy << "\n";
+			std::cout << "Kinetic energy = " << kineticEnergy << "\n";
+			std::cout << "Actual contact = " << actualContactNum << "\n";
+			std::cout << "=================" << std::endl;
 		}
 
-		if (count == 10) {
-			simIsoComp.writeParticleTimeHistory2Files();
-			simIsoComp.flushAllFiles();
-
-			timer = clock() - timer;
-			fprintf(fileTime, "%lf\n", static_cast<double>(timer) / CLOCKS_PER_SEC);
-			timer = clock();
-			fflush(fileTime);
-
-			count = 0;
-		}
 
 		iStep++;
 	}
