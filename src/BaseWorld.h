@@ -79,6 +79,8 @@ public:
 	const double getXlen() const { return _xlen; }
 	const double getYlen() const { return _ylen; }
 	const int countActucalContacts() const;
+	const double getElasticEnergy() const;
+	const double getElasticEnergyPerContact() const;
 	const int countPossibleContacts() const;
 	const double getKineticEnergy() const;
 	const double getKineticEnergyPerParticle() const;

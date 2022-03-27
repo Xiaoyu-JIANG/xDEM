@@ -268,6 +268,37 @@ const int BaseWorld::countActucalContacts() const
 	return static_cast<int>(sum);
 }
 
+const double BaseWorld::getElasticEnergy() const 
+{
+	double elasticEnergy = 0.0;
+	double kn = _contactModelHandler->getNormalStiffness();
+	for (int i = 0; i < _particleHandlers.size(); ++i) {
+		for (const auto& contact : _particleHandlers[i]->getContactInfo()) {
+			vector2d normalOverlap = contact.second._normalForce / kn;
+			double deltaN2 = normalOverlap.getLengthSquared();
+			elasticEnergy += deltaN2;
+		}
+	}
+	return elasticEnergy * kn * 0.5;
+}
+
+const double BaseWorld::getElasticEnergyPerContact() const
+{
+	double elasticEnergy = 0.0;
+	int count = 0;
+	double kn = _contactModelHandler->getNormalStiffness();
+	for (int i = 0; i < _particleHandlers.size(); ++i) {
+		for (const auto& contact : _particleHandlers[i]->getContactInfo()) {
+			vector2d normalOverlap = contact.second._normalForce / kn;
+			double deltaN2 = normalOverlap.getLengthSquared();
+			elasticEnergy += deltaN2;
+			count++;
+		}
+	}
+	if (count == 0) return 0.0;
+	else return elasticEnergy * kn * 0.5 / count;
+}
+
 const double BaseWorld::getKineticEnergy() const
 {
 	double kineticEnergy = 0.0;
@@ -293,7 +324,8 @@ const double BaseWorld::getKineticEnergyPerNonRattlerParticle() const
 		kineticEnergy += _particleHandlers[i]->getKineticEnergy();
 		count++;
 	}
-	return kineticEnergy / count;
+	if (count == 0) return 0.0;
+	else return kineticEnergy / count;
 }
 
 const double BaseWorld::getSolidFraction() const
