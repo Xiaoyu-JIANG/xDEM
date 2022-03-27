@@ -33,6 +33,7 @@ public:
 	void setFriction(const double& fric);
 	void setRestitutionCoeff(const double& restitutionCoeff);
 	void recalculateFactor();
+	const double getNormalStiffness() const { return _normalStiffness; }
 
 private:
 	inline const vector2d getElasticNormalForce(const ContactGeometry& contactGeometry) const;
