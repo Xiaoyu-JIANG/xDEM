@@ -6,7 +6,7 @@
 #define FORMAT_BaseParticle \
 "%7d\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%.8le\t%4d\n"
 
-const double BaseParticle::_GlobalDamping_ = 0.0;
+double BaseParticle::_GlobalDamping_ = 0.0;
 
 void BaseParticle::calculateRelativeVelocityAtContactPoint(
 	const BaseParticle* const other, 
