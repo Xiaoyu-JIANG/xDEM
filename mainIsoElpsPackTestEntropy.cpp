@@ -135,10 +135,10 @@ int main()
 	int iStep = 0;
 	int count = 0;
 	bool goNextComp = true;
-	EllipticParticle::_GlobalDamping_ = 0.1;
+	EllipticParticle::_GlobalDamping_ = 0.5;
 	while (1) {
 
-		simIsoComp.scaleVelocityOfRattlers(0.9);
+		simIsoComp.scaleVelocityOfRattlers(0.95);
 		simIsoComp.modifyParticlePosition();
 		simIsoComp.findPossibleContacts();
 		simIsoComp.updateContacts();
@@ -149,10 +149,11 @@ int main()
 		double elasticEnergy = simIsoComp.getElasticEnergyPerContact();
 		double kineticEnergy = simIsoComp.getKineticEnergyPerNonRattlerParticle();
 
-		if ((elasticEnergy < 1e-8 || kineticEnergy < 1e-8) && goNextComp) {
+		if ((elasticEnergy < 1e-8 || kineticEnergy < 1e-4) && goNextComp) {
 			if (count == 1) {
 				simIsoComp.updateTotalStress();
 				simIsoComp.print2Screen_worldState(iStep);
+
 				simIsoComp.writeParticleTimeHistory2Files();
 				simIsoComp.flushAllFiles();
 
