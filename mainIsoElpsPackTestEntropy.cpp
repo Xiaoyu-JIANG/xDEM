@@ -43,7 +43,7 @@ int main()
 	printf("OMP parameters:\nnumber of thread: %d\nsize of chunk: %d\n", numThread, sizeChunk);
 
 
-	double dt = 1e-4;
+	double dt = 5e-5;
 	const double density = 1.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
@@ -65,7 +65,7 @@ int main()
 
 	// RANDOM GENERATION
 	// Generate particles, contact model, and world.
-	ContactModel contactModel(kn, kt, 0.9, 0.0);
+	ContactModel contactModel(kn, kt, 1.0, 0.0);
 	vector<CircularParticle> circularParticles(numParticle);
 	vector<BaseParticle*> particleHandlers(numParticle);
 	vector<double> alpha(numParticle);
@@ -91,13 +91,13 @@ int main()
 	simRandGen.prepare(path);
 	for (int iStep = 0; iStep < 5e4; ++iStep) {
 		simRandGen.takeTimeStep();
-		simRandGen.resetVelocityOfRattlers();
+		simRandGen.scaleVelocityOfRattlers(0.9);
 		if (fmod(iStep, 1000) == 0) {
 			simRandGen.print2Screen_worldState(iStep);
 			simRandGen.writeParticleTimeHistory2Files();
 			simRandGen.flushAllFiles();
 		}
-		if (simRandGen.countActucalContacts() < 5) break;
+		if (simRandGen.countActucalContacts() < 100) break;
 	}
 	simRandGen.closeParticleTimeHistoryFiles();
 	printf("Finish...\n");
@@ -135,39 +135,32 @@ int main()
 	int iStep = 0;
 	int count = 0;
 	bool goNextComp = true;
-	EllipticParticle::_GlobalDamping_ = 0.5;
+	EllipticParticle::_GlobalDamping_ = 0.0;
 	while (1) {
 
-		simIsoComp.scaleVelocityOfRattlers(0.95);
+		simIsoComp.resetVelocityOfRattlers();
 		simIsoComp.modifyParticlePosition();
 		simIsoComp.findPossibleContacts();
 		simIsoComp.updateContacts();
 		simIsoComp.collectForceAndTorque();
 		simIsoComp.takeTimeIntegral();
 		
-
 		double elasticEnergy = simIsoComp.getElasticEnergyPerContact();
 		double kineticEnergy = simIsoComp.getKineticEnergyPerNonRattlerParticle();
-
-		if ((elasticEnergy < 1e-8 || kineticEnergy < 1e-4) && goNextComp) {
+		if ((elasticEnergy < 1e-6 || kineticEnergy < 1e-4) && goNextComp) {
 			if (count == 1) {
 				simIsoComp.updateTotalStress();
 				simIsoComp.print2Screen_worldState(iStep);
-
 				simIsoComp.writeParticleTimeHistory2Files();
 				simIsoComp.flushAllFiles();
-
 				std::cout << "\t\tElastic energy = " << elasticEnergy << std::endl;
-
 				timer = clock() - timer;
 				fprintf(fileTime, "%lf\n", static_cast<double>(timer) / CLOCKS_PER_SEC);
 				timer = clock();
 				fflush(fileTime);
-
 				count = 0;
 			}
-
-			simIsoComp.updatePeriodicBoundary_strainControl(-1e-1, -1e-1);
+			simIsoComp.updatePeriodicBoundary_strainControl(-2e-1, -2e-1);
 			count++;
 			goNextComp = false;
 		}
@@ -182,7 +175,6 @@ int main()
 			std::cout << "Actual contact = " << actualContactNum << "\n";
 			std::cout << "=================" << std::endl;
 		}
-
 
 		iStep++;
 	}
