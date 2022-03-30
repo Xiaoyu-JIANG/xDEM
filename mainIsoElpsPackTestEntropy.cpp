@@ -47,7 +47,7 @@ int main()
 	const double density = 1.0;
 	const double kn = 1e7;
 	const double kt = 1e7;
-	const double resCoeff = 0.9;
+	const double resCoeff = 0.8;
 	const double friCoeff = friction;
 	const double xmin = -100.0;
 	const double xmax = 100.0;
@@ -91,7 +91,7 @@ int main()
 	simRandGen.prepare(path);
 	for (int iStep = 0; iStep < 5e4; ++iStep) {
 		simRandGen.takeTimeStep();
-		simRandGen.scaleVelocityOfRattlers(0.9);
+		simRandGen.scaleVelocityOfRattlers(0.5);
 		if (fmod(iStep, 1000) == 0) {
 			simRandGen.print2Screen_worldState(iStep);
 			simRandGen.writeParticleTimeHistory2Files();
@@ -134,20 +134,27 @@ int main()
 	clock_t timer = clock();
 	int iStep = 0;
 	int count = 0;
+	int count0 = 0;
 	bool goNextComp = true;
-	EllipticParticle::_GlobalDamping_ = 0.0;
+	EllipticParticle::_GlobalDamping_ = 0.5;
+	const int critCntNum = ellipticParticles.size() * 2.5;
 	while (1) {
 
-		simIsoComp.resetVelocityOfRattlers();
 		simIsoComp.modifyParticlePosition();
 		simIsoComp.findPossibleContacts();
 		simIsoComp.updateContacts();
 		simIsoComp.collectForceAndTorque();
 		simIsoComp.takeTimeIntegral();
+		simIsoComp.scaleVelocityOfRattlers(0.95);
 		
 		double elasticEnergy = simIsoComp.getElasticEnergyPerContact();
 		double kineticEnergy = simIsoComp.getKineticEnergyPerNonRattlerParticle();
-		if ((elasticEnergy < 1e-6 || kineticEnergy < 1e-4) && goNextComp) {
+		int actualContactNum = simIsoComp.countActucalContacts();
+		if (
+			(elasticEnergy < 1e-6 && actualContactNum < critCntNum && goNextComp) 
+			|| (elasticEnergy >= 1e-6 && actualContactNum >= critCntNum && kineticEnergy < 5e-2 && goNextComp)
+			) 
+		{
 			if (count == 1) {
 				simIsoComp.updateTotalStress();
 				simIsoComp.print2Screen_worldState(iStep);
@@ -159,17 +166,18 @@ int main()
 				timer = clock();
 				fflush(fileTime);
 				count = 0;
+				count0 = 0;
 			}
 			simIsoComp.updatePeriodicBoundary_strainControl(-2e-1, -2e-1);
 			count++;
 			goNextComp = false;
 		}
 		else {
-			goNextComp = true;
+			count0++;
+			if (count0 > 10) goNextComp = true;
 		}
 
 		if (fmod(iStep, 1000) == 0) {
-			int actualContactNum = simIsoComp.countActucalContacts();
 			std::cout << "Elastic energy = " << elasticEnergy << "\n";
 			std::cout << "Kinetic energy = " << kineticEnergy << "\n";
 			std::cout << "Actual contact = " << actualContactNum << "\n";
