@@ -617,7 +617,7 @@ double EllipticParticle::NewtonRaphsonForQuartic(const double A, const double B,
 	double C0 = 2.0 * C;
 	double r0 = init;
 	double r = 0.0;
-	double tol = 1e-8;
+	double tol = 1e-10;
 	while (abs(r0 - r) > tol) {
 		r = r0;
 		r0 -= (A * pow4(r0) + B * pow3(r0) + C * pow2(r0) + D * r0 + E) / (A0 * pow3(r0) + B0 * pow2(r0) + C0 * r0 + D);
