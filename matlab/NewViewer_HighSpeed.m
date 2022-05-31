@@ -13,7 +13,6 @@ ze = importdata('output_rotation.dat');
 bd = importdata('output_boundary.dat');
 
 
-
 fig = figure('units','centimeters','position',[2 2 23 23]);
 
 n = 50;
