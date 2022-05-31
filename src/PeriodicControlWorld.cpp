@@ -5,6 +5,8 @@
 
 using std::stringstream;
 
+constexpr double MAX_SCALE_RATE = 100000000.0;
+
 //void PeriodicControlWorld::setControlMethod(
 //	const ControlMethod& controlMethodX, const double& valueX, 
 //	const ControlMethod& controlMethodY, const double& valueY)
@@ -60,7 +62,7 @@ void PeriodicControlWorld::setVirtualBoundaryMass()
 		if (iter->getSettings() & SETTING::SKIP_MACRO_SUM) continue;
 		_mass += iter->getMass();
 	}
-	_mass /= sqrt(double(_particleHandlers.size()));
+	_mass /= (double(_particleHandlers.size()) * 10.0);
 }
 
 void PeriodicControlWorld::setVirtualBoundaryMass(const double& mass)
@@ -154,7 +156,12 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlX(const double& s
 	double stressX = _totalStress.xx();
 	if(abs(stressX) < stress) _velX *= (1.0 - _dt * 1.0);
 	double deltaVel = (stress - stressX) * _xlen / _mass * _dt;
-	_velX += deltaVel;
+	
+	_velX = deltaVel;
+	if (abs(_velX) / _xlen > MAX_SCALE_RATE * _dt) {
+		_velX = MAX_SCALE_RATE * _dt * _xlen;
+	}
+
 	_xmin += _velX * _dt;
 	_xmax = -_xmin;
 	_xlen = _xmax - _xmin;
@@ -170,7 +177,12 @@ void PeriodicControlWorld::updatePeriodicBoundary_stressControlY(const double& s
 	double stressY = _totalStress.yy();
 	if (abs(stressY) < stress) _velY *= (1.0 - _dt * 1.0);
 	double deltaVel = (stress - stressY) * _ylen / _mass * _dt;
-	_velY += deltaVel;
+	
+	_velY = deltaVel;
+	if (abs(_velY) / _ylen > MAX_SCALE_RATE * _dt) {
+		_velY = MAX_SCALE_RATE * _dt * _ylen;
+	}
+
 	_ymin += _velY * _dt;
 	_ymax = -_ymin;
 	_ylen = _ymax - _ymin;
