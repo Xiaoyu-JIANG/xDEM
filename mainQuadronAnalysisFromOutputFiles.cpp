@@ -70,6 +70,7 @@ void oneCase(const string path)
 
 
 	printf("finish\n");
+	std::cin.get();
 }
 
 
