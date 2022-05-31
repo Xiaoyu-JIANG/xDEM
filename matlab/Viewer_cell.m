@@ -70,8 +70,17 @@ for ii = 1:numCell
     cell(ii).y = fscanf(cellFile, "%e", cell(ii).order);
     fscanf(cellFile, "%e", cell(ii).order);
 end
-maxCellOrder = 10;
-c = colormap(hsv(maxCellOrder-2));
+maxCellOrder = max([cell.order]);
+c = [228,26,28
+    55,126,184
+    77,175,74
+    152,78,163
+    255,127,0
+    255,255,51
+    166,86,40
+    247,129,191
+    153,153,153] / 255;
+
 for ii = 3:maxCellOrder
     index = find([cell.order] == ii);
     cell_x = [];
@@ -82,9 +91,16 @@ for ii = 3:maxCellOrder
     end
     if isempty(cell_x); continue; end
     cell_ps = polyshape(cell_x,cell_y,'Simplify',false);
-    plot(cell_ps,...
-        'FaceColor', c(ii-2,:),...
-        'FaceAlpha', 0.9,...
-        'EdgeColor', 0.5*ones(1,3));
+    if ii <= 11
+        plot(cell_ps,...
+            'FaceColor', c(ii-2,:),...
+            'FaceAlpha', 0.6,...
+            'EdgeColor', 0.5*ones(1,3));
+    else
+        plot(cell_ps,...
+            'FaceColor', c(end,:),...
+            'FaceAlpha', 0.6,...
+            'EdgeColor', 0.5*ones(1,3));
+    end
 end
 
