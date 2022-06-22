@@ -3,7 +3,7 @@ clc
 close all
 fclose all
 
-boundaryHalfLentgh = 30;
+boundaryHalfLentgh = 10;
 boundaryGap = 1.1;
 
 
@@ -32,13 +32,15 @@ fig = createMyDefaultFigure('',[15,10]);
 clf;
 ax = gca;
 set(gca, 'LooseInset', get(gca, 'TightInset'));
-ax.XLabel.String = '$x$';
-ax.YLabel.String = '$y$';
+% ax.XLabel.String = '$x$';
+% ax.YLabel.String = '$y$';
 axis equal;
 box on;
 hold on;
-xlim([-32, 32])
-ylim([-20, 20])
+xlim([-13, 13])
+ylim([-8, 8])
+% xlim([-6.4, 6.4])
+% ylim([-4, 4])
 
 
 for j = 1:length(r)
@@ -52,7 +54,7 @@ for j = 1:length(r)
     Y((j-1)*(n+2)+1:(j)*(n+2)-1) = yy3;
 end
 hr = rectangle('Position',[bdt(1),bdt(3),bdt(2)-bdt(1),bdt(4)-bdt(3)]);
-hl = line(X,Y,'Color','k','LineStyle','-');
+hl = line(X,Y,'Color','k','LineStyle','-','LineWidth',1);
 
 
 cellFile = fopen('quadronAnalysis_cell.dat');
@@ -70,6 +72,7 @@ for ii = 1:numCell
     cell(ii).y = fscanf(cellFile, "%e", cell(ii).order);
     fscanf(cellFile, "%e", cell(ii).order);
 end
+% cell([cell.area]<)
 maxCellOrder = max([cell.order]);
 c = [228,26,28
     55,126,184
