@@ -3,8 +3,17 @@ clc
 close all
 fclose all;
 
-boundaryHalfLentgh = 40;
+makeGIF = false;
+if makeGIF
+    gifName = 'animation.gif';
+end
+
+makePeriodicBound = false;
+
+boundaryHalfLentgh = 20;
 boundaryGap = 1.1;
+
+frameRate = 25;
 
 r = importdata('output_radius.dat');
 kr = importdata('output_aspectRatio.dat');
@@ -13,7 +22,7 @@ ze = importdata('output_rotation.dat');
 bd = importdata('output_boundary.dat');
 
 
-fig = figure('units','centimeters','position',[2 2 23 23]);
+fig = createMyDefaultFigure('',[10 10]);
 
 n = 50;
 tt = 0:2*pi/n:2*pi;
@@ -22,6 +31,8 @@ yy = sin(tt);
 
 start = 0;
 step = 1;
+
+
 
 for i = 1:step:length(xe(:,1))
     
@@ -46,8 +57,8 @@ for i = 1:step:length(xe(:,1))
     hold on;
     xlim([-boundaryHalfLentgh, boundaryHalfLentgh])
     ylim([-boundaryHalfLentgh, boundaryHalfLentgh])
-%         xlim([bdt(1)*boundaryGap, bdt(2)*boundaryGap])
-%         ylim([bdt(3)*boundaryGap, bdt(4)*boundaryGap])
+    %         xlim([bdt(1)*boundaryGap, bdt(2)*boundaryGap])
+    %         ylim([bdt(3)*boundaryGap, bdt(4)*boundaryGap])
     
     title(['Step = ',num2str(i)]);
     
@@ -64,7 +75,27 @@ for i = 1:step:length(xe(:,1))
     hold on
     hr = rectangle('Position',[bdt(1),bdt(3),bdt(2)-bdt(1),bdt(4)-bdt(3)]);
     hl = line(X,Y,'Color','k','LineStyle','-');
+
+    if makePeriodicBound
+        for ii = -1:1
+            for jj = -1:1
+                if ii == 0 && jj == 0; continue; end
+                line(X + (bdt(2)-bdt(1))*ii, Y + (bdt(4)-bdt(3))*jj, ...
+                    'Color',[0.6 0.6 0.6],'LineStyle','-');
+            end
+        end
+    end
     
     drawnow
-%     pause(0.3)
+    %     pause(0.3)
+    if makeGIF
+        frame = getframe(1);
+        im = frame2im(frame);
+        [imind,cm] = rgb2ind(im,256);
+        if i == 1
+            imwrite(imind,cm,gifName,'gif', 'Loopcount', inf, 'DelayTime', 1/frameRate);
+        else
+            imwrite(imind,cm,gifName,'gif', 'WriteMode', 'append', 'DelayTime', 1/frameRate);
+        end
+    end
 end
