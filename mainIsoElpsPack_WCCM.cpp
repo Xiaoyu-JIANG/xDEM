@@ -80,7 +80,7 @@ void Simulation(const std::string path0,
 	for (int iStep = 0; iStep < 5e4; ++iStep) {
 		world_rg.takeTimeStep();
 		world_rg.resetVelocityOfRattlers();
-		if (fmod(iStep, 1000) == 0) {
+		if (fmod(iStep, 100) == 0) {
 			world_rg.print2Screen_worldState(iStep);
 			world_rg.writeParticleTimeHistory2Files();
 			world_rg.flushAllFiles();
