@@ -16,5 +16,8 @@ nexttile
 hold on
 box on
 S = importdata('output_stress.dat');
-plot(S(:,[1,4]))
+% plot(abs(S(:,[1,4])-100));
+plot(S(:,[1,4]));
+% set(gca,'yscale','log');
 % ylim([99.9,100.1]);
+% xlim([0 inf])
