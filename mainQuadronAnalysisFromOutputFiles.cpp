@@ -69,15 +69,53 @@ void oneCase(const string path)
 	quadronAnalysis.printCellMemberParticle2File(fileMember);
 
 
+	fclose(fileCell);
+	fclose(fileParticle);
+	fclose(fileQuadron);
+	fclose(fileBreak);
+	fclose(fileCombine);
+	fclose(fileNeighborCell);
+	fclose(fileCoordinationNum);
+	fclose(fileCoordinationNum0);
+	fclose(fileRattler);
+	fclose(fileMember);
+
 	printf("finish\n");
-	std::cin.get();
+	//std::cin.get();
 }
 
 
 int main()
 {
+	//std::vector<std::string> Alpha = {
+	//	"alpha=1.0/",
+	//	"alpha=1.1/",
+	//	"alpha=1.2/",
+	//	"alpha=1.3/",
+	//	"alpha=1.4/",
+	//	"alpha=1.5/",
+	//	"alpha=1.6/",
+	//	"alpha=1.7/",
+	//	"alpha=1.8/",
+	//	"alpha=1.9/",
+	//	"alpha=2.0/",
+	//	"alpha=2.5/",
+	//	"alpha=3.0/",
+	//	"alpha=4.0/" };
+	std::vector<std::string> Alpha = {
+		"alpha=1.01/",
+		"alpha=1.05/"};
+	std::vector<std::string> Mu = {
+		"0/","1/","2/","3/","4/","5/"
+	};
 
-	oneCase("");
+	for (const auto& alpha : Alpha) {
+		for (const auto& mu : Mu) {
+			std::stringstream path;
+			path << alpha << mu << "Compression/Final/";
+			oneCase(path.str().c_str());
+		}
+	}
 
 	return 0;
 }
