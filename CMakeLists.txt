@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(mainQuadronAnalysisFromOutputFiles VERSION 1.0)
+project(mainIsoCircPack_WCCM VERSION 1.0)
 
 add_subdirectory(src)
 
